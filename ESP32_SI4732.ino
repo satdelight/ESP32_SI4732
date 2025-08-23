@@ -536,6 +536,24 @@ void setup() {
   double ref_trimmed = g_realRefHz + REFCLK_TRIM_HZ;
   rx.setRefClock((uint32_t)round(ref_trimmed));
   Serial.printf("LEDC trimmed: %.3f Hz\n", ref_trimmed);
+  
+  // PPM diagnostics for reference clock accuracy
+  const double ideal_refclk = 32768.0;
+  double ppm_error_measured = ((g_realRefHz - ideal_refclk) / ideal_refclk) * 1000000.0;
+  double ppm_mismatch = ((ref_trimmed - g_realRefHz) / g_realRefHz) * 1000000.0;
+  
+  // Calculate equivalent frequency error at 3.955 MHz (typical HF frequency for testing)
+  const double test_freq_mhz = 3.955;
+  double freq_error_hz = (ppm_error_measured / 1000000.0) * (test_freq_mhz * 1000000.0);
+  
+  Serial.printf("--- Reference Clock PPM Diagnostics ---\n");
+  Serial.printf("Measured refclk: %.3f Hz\n", g_realRefHz);
+  Serial.printf("PPM error vs 32768 Hz: %+.1f ppm\n", ppm_error_measured);
+  Serial.printf("Refclk set on SI473x: %u Hz\n", (uint32_t)round(ref_trimmed));
+  Serial.printf("PPM mismatch (set vs measured): %+.1f ppm\n", ppm_mismatch);
+  Serial.printf("Equiv. error at %.3f MHz: %+.1f Hz\n", test_freq_mhz, freq_error_hz);
+  Serial.printf("---------------------------------------\n");
+  
   rx.setRefClockPrescaler(1);
   rx.setup(RESET_PIN, 0, MW_BAND_TYPE, SI473X_ANALOG_AUDIO, XOSCEN_RCLK);
 
