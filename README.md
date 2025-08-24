@@ -146,4 +146,4 @@ Use REFCLK_TRIM_HZ to minimize your observed error for your target bands. For pr
 
 ## License
 
-See the LICENSE file in this repository (or add one, e.g., MIT, if not present).
+This project is licensed under the MIT License — see the LICENSE file for details.
